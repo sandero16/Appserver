@@ -75,7 +75,7 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
         }
     }
     @Override
-    public void addToGame(String sessionToken, int aantalspelers){
+    public synchronized void addToGame(String sessionToken, int aantalspelers){
         System.out.println("1token: "+sessionToken);
         if(aantalspelers==2) {
 
@@ -83,6 +83,7 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
                 waitingPlayers2.add(sessionToken);
             }
             if (waitingPlayers2.size() == 2&&waitingPlayers2.get(1).equals(sessionToken)) {
+                notifyAll();
                 System.out.println("3token: "+sessionToken);
                 String speler1 = waitingPlayers2.get(0);
                 String speler2 = waitingPlayers2.get(1);
@@ -94,6 +95,10 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
                 occupiedPlayers.add(speler1);
                 occupiedPlayers.add(speler2);
             }
+            else{
+                System.out.println("vindt");
+                vindtTegenspeler(sessionToken);
+            }
 
         }
         else if(aantalspelers==3) {
@@ -101,6 +106,7 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
                 waitingPlayers3.add(sessionToken);
             }
             if (waitingPlayers3.size() == 3) {
+                notifyAll();
                 String  speler1 = waitingPlayers3.get(0);
                 String speler2 = waitingPlayers3.get(1);
                 String speler3 = waitingPlayers3.get(2);
@@ -117,6 +123,9 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
                 occupiedPlayers.add(speler3);
 
             }
+            else{
+                vindtTegenspeler(sessionToken);
+            }
 
         }
         else{
@@ -124,6 +133,7 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
                 waitingPlayers4.add(sessionToken);
             }
             if (waitingPlayers4.size() == 4) {
+                notifyAll();
                 String speler1 = waitingPlayers4.get(0);
                 String speler2 = waitingPlayers4.get(1);
                 String speler3 = waitingPlayers4.get(2);
@@ -141,6 +151,9 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
 
                 occupiedPlayers.add(speler3);
 
+            }
+            else{
+                vindtTegenspeler(sessionToken);
             }
 
         }
@@ -160,9 +173,19 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
     }
 
     @Override
-    public boolean vindtTegenspeler(String sessionToken){
+    public synchronized boolean vindtTegenspeler(String sessionToken){
+        try {
+            while (!occupiedPlayers.contains(sessionToken)) {
+                System.out.println("waitings");
+                wait();
+            }
+            System.out.println("dobby is free");
+            return true;
+        }
+        catch (Exception e){
 
-       return occupiedPlayers.contains(sessionToken);
+        }
+        return false;
     }
 
     @Override
