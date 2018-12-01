@@ -24,5 +24,6 @@ public interface Counter extends Remote {
     ArrayList<ArrayList<Integer>>getReedsGezet(int i) throws RemoteException;
     boolean getEnd(int game) throws  RemoteException;
     int getViewerId(int game) throws  RemoteException;
+    void geefNotify(String sessionToken) throws RemoteException;
 
 }

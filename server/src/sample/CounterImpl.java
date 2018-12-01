@@ -50,11 +50,13 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
     @Override
     public void changeBeurt(String sessionToken){
         Game game=(Game)busyGame.get(sessionToken);
-        game.changeBeurt(sessionToken);
+        game.changeBeurt();
 
     }
     public boolean checkBeurt(String sessionToken){
         Game game=(Game)busyGame.get(sessionToken);
+        System.out.println("het is nu aan"+game.checkBeurt());
+        System.out.println("checkbeurt: "+sessionToken);
         return (sessionToken.equals(game.checkBeurt()));
     }
 
@@ -228,5 +230,10 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
     public int getViewerId(int game){
         Game tempgame=watchGames.get(game);
         return tempgame.getViewerId();
+    }
+    @Override
+    public void geefNotify(String sessionToken){
+        Game game=(Game)busyGame.get(sessionToken);
+        game.geefNotify();
     }
 }

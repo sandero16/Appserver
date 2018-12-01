@@ -9,11 +9,9 @@ public class Game {
     private boolean end;
     private ArrayList<String>players;
     private ArrayList<Integer>scores;
-
-    private int keuze1;
-    private int keuze2;
-    private int plaats1;
-    private int plaats2;
+    private ArrayList<Integer>keuzes;
+   // private int plaats1;
+    //private int plaats2;
     private String beurt;
     private int[][] matrix;
     private ArrayList<ArrayList<Integer>> reedsGezet;
@@ -25,6 +23,7 @@ public class Game {
     public  Game(String player1, String player2){
         players=new ArrayList<>();
         scores=new ArrayList<>();
+        keuzes=new ArrayList<>();
         update=new ArrayList<>();
         viewerupdate=new ArrayList<>();
         end=false;
@@ -99,8 +98,8 @@ public class Game {
                 scores.add(0);
             }
 
-            keuze1=-1;
-            keuze2=-1;
+            //keuze1=-1;
+            //keuze2=-1;
             gegokt=new int[2];
 
             beurt=players.get(0);
@@ -127,7 +126,7 @@ public class Game {
 
     }
 
-    public int getFromMatrix(int i){
+    public synchronized int getFromMatrix(int i){
         System.out.println("value= "+i);
         i--;
         int row=i/4;
@@ -138,40 +137,54 @@ public class Game {
         for(int j=0;j<viewerupdate.size();j++){
             viewerupdate.set(j,true);
         }
-
-        for(int j=0;j<update.size();j++){
+        //notifyAll();
+        /*for(int j=0;j<update.size();j++){
             update.set(j,true);
-        }
-        if(keuze1==-1){
+        }*/
+        keuzes.add(matrix[row][column]);
+        /*if(keuze1==-1){
             keuze1=matrix[row][column];
             plaats1=i;
         }
         else{
             keuze2=matrix[row][column];
             plaats2=i;
+        }*/
+        if(keuzes.size()==2){
+            if(keuzes.get(0)==keuzes.get(1)){
+                scores.set(players.indexOf(beurt),scores.get(players.indexOf(beurt))+1);
+                for (Integer k:scores) {
+                    System.out.println("score: "+k);
+                }
+            }
+            keuzes.clear();
         }
         return matrix[row][column];
     }
-    public void changeBeurt(String sessionToken){
+    public void changeBeurt(){
         //beveiliging
         int index=players.indexOf(beurt);
-        if(keuze1==keuze2){
+        /*if(keuze1==keuze2){
             scores.set(index,scores.get(index)+1);
+            System.out.println("#############");
+                for (Integer i:scores) {
+                    System.out.println("score: "+i);
+                }
+            System.out.println("##############");
             ArrayList<Integer>temp=new ArrayList<>();
             temp.add(keuze1);
             temp.add(plaats1);
             temp.add(plaats2);
             reedsGezet.add(temp);
             if(reedsGezet.size()==8)end=true;
-        }
-        keuze1=-1;keuze2=-1;
+        }*/
+
         if(index==(players.size()-1)){
             beurt=players.get(0);
         }
         else{
             beurt=players.get(index+1);
         }
-        System.out.println("het is nu aan: "+beurt);
 
     }
     public String checkBeurt(){
@@ -185,15 +198,25 @@ public class Game {
     public int getIndex(String sessionToken){
         return players.indexOf(sessionToken);
     }
-    public int[] getTegenspelerGok(String sessionToken){
-        int index=players.indexOf(sessionToken);
-        if(update.get(index)) {
+    public synchronized int[] getTegenspelerGok(String sessionToken){
+        try{
+            wait();
+            return gegokt;
+        }
+        catch (Exception e){
+            System.out.println("waiting failed");
+            e.printStackTrace();
+            System.out.println(e);
+            return null;
+        }
+         /*int index=players.indexOf(sessionToken);
+       if(update.get(index)) {
             update.set(index,false);
             return gegokt;
         }
         else{
             return null;
-        }
+        }*/
     }
     public int[] getGok(int viewerid){
         if(viewerupdate.get(viewerid)) {
@@ -228,5 +251,7 @@ public class Game {
     public ArrayList<ArrayList<Integer>> getReedsGezet(){
         return reedsGezet;
     }
-
+    public synchronized void geefNotify(){
+        notifyAll();
+    }
 }
