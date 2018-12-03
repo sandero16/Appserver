@@ -10,6 +10,7 @@ public class Game {
     private ArrayList<String>players;
     private ArrayList<Integer>scores;
     private ArrayList<Integer>keuzes;
+    private ArrayList<Integer>plaatsen;
    // private int plaats1;
     //private int plaats2;
     private String beurt;
@@ -24,6 +25,7 @@ public class Game {
         players=new ArrayList<>();
         scores=new ArrayList<>();
         keuzes=new ArrayList<>();
+        plaatsen=new ArrayList<>();
         update=new ArrayList<>();
         viewerupdate=new ArrayList<>();
         end=false;
@@ -98,8 +100,7 @@ public class Game {
                 scores.add(0);
             }
 
-            //keuze1=-1;
-            //keuze2=-1;
+
             gegokt=new int[2];
 
             beurt=players.get(0);
@@ -142,6 +143,7 @@ public class Game {
             update.set(j,true);
         }*/
         keuzes.add(matrix[row][column]);
+        plaatsen.add(i);
         /*if(keuze1==-1){
             keuze1=matrix[row][column];
             plaats1=i;
@@ -153,11 +155,22 @@ public class Game {
         if(keuzes.size()==2){
             if(keuzes.get(0)==keuzes.get(1)){
                 scores.set(players.indexOf(beurt),scores.get(players.indexOf(beurt))+1);
+
+                ArrayList<Integer>temp=new ArrayList<>();
+                temp.add(keuzes.get(0));
+                temp.add(plaatsen.get(0));
+                temp.add(plaatsen.get(1));
+                reedsGezet.add(temp);
+
+                if(reedsGezet.size()==8)end=true;
+
                 for (Integer k:scores) {
                     System.out.println("score: "+k);
                 }
             }
             keuzes.clear();
+            plaatsen.clear();
+
         }
         return matrix[row][column];
     }
