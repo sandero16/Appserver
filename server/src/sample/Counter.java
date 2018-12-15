@@ -13,7 +13,7 @@ public interface Counter extends Remote {
     int[]getGameGok(int i, int viewerId) throws RemoteException;
     void testConnectie() throws  RemoteException;
     boolean vindtTegenspeler(String sessionToken) throws RemoteException;
-    void addToGame(String sessionToken, int aantalspelers) throws RemoteException;
+    void startGame(ArrayList<String> players) throws RemoteException;
     boolean setGame(String sessionToken) throws RemoteException;
     int getZet(int i, String sessionToken) throws RemoteException;
     void changeBeurt(String sessionToken) throws RemoteException;

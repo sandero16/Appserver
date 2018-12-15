@@ -17,6 +17,10 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
     HashMap hashMap=new HashMap();
     ArrayList<Integer> sessiontoken=new ArrayList<>();
 
+    ArrayList<Game> waitingGame2=new ArrayList<>();
+    ArrayList<Game> waitingGame3=new ArrayList<>();
+    ArrayList<Game> waitingGame4=new ArrayList<>();
+
 
     ArrayList<String> waitingPlayers2=new ArrayList<>();
     ArrayList<String> waitingPlayers3=new ArrayList<>();
@@ -76,90 +80,7 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
             return false;
         }
     }
-    @Override
-    public synchronized void addToGame(String sessionToken, int aantalspelers){
-        System.out.println("1token: "+sessionToken);
-        if(aantalspelers==2) {
 
-            if (!waitingPlayers2.contains(sessionToken)) {
-                waitingPlayers2.add(sessionToken);
-            }
-            if (waitingPlayers2.size() == 2&&waitingPlayers2.get(1).equals(sessionToken)) {
-                notifyAll();
-                System.out.println("3token: "+sessionToken);
-                String speler1 = waitingPlayers2.get(0);
-                String speler2 = waitingPlayers2.get(1);
-                waitingPlayers2.clear();
-                Game game = new Game(speler1, speler2);
-                busyGame.put(speler1, game);
-                busyGame.put(speler2, game);
-                watchGames.add(game);
-                occupiedPlayers.add(speler1);
-                occupiedPlayers.add(speler2);
-            }
-            else{
-                System.out.println("vindt");
-                vindtTegenspeler(sessionToken);
-            }
-
-        }
-        else if(aantalspelers==3) {
-            if (!waitingPlayers3.contains(sessionToken)) {
-                waitingPlayers3.add(sessionToken);
-            }
-            if (waitingPlayers3.size() == 3) {
-                notifyAll();
-                String  speler1 = waitingPlayers3.get(0);
-                String speler2 = waitingPlayers3.get(1);
-                String speler3 = waitingPlayers3.get(2);
-                waitingPlayers3.clear();
-                System.out.println(speler1+" "+speler2+" "+ speler3+" ");
-                Game game = new Game(speler1, speler2 ,speler3);
-
-                busyGame.put(speler1, game);
-                busyGame.put(speler2, game);
-                busyGame.put(speler3, game);
-                watchGames.add(game);
-                occupiedPlayers.add(speler1);
-                occupiedPlayers.add(speler2);
-                occupiedPlayers.add(speler3);
-
-            }
-            else{
-                vindtTegenspeler(sessionToken);
-            }
-
-        }
-        else{
-            if (!waitingPlayers4.contains(sessionToken)) {
-                waitingPlayers4.add(sessionToken);
-            }
-            if (waitingPlayers4.size() == 4) {
-                notifyAll();
-                String speler1 = waitingPlayers4.get(0);
-                String speler2 = waitingPlayers4.get(1);
-                String speler3 = waitingPlayers4.get(2);
-                String speler4 = waitingPlayers4.get(3);
-                waitingPlayers4.clear();
-                Game game = new Game(speler1, speler2 ,speler3, speler4);
-
-                busyGame.put(speler1, game);
-                busyGame.put(speler2, game);
-                busyGame.put(speler3, game);
-                busyGame.put(speler4, game);
-                watchGames.add(game);
-                occupiedPlayers.add(speler1);
-                occupiedPlayers.add(speler2);
-
-                occupiedPlayers.add(speler3);
-
-            }
-            else{
-                vindtTegenspeler(sessionToken);
-            }
-
-        }
-    }
     @Override
     public int getGame(int i){
         if(watchGames.isEmpty()){
@@ -235,5 +156,14 @@ public class CounterImpl extends UnicastRemoteObject implements Counter{
     public void geefNotify(String sessionToken){
         Game game=(Game)busyGame.get(sessionToken);
         game.geefNotify();
+    }
+    @Override
+    public void startGame(ArrayList<String>players){
+        Game tempGame=new Game();
+        System.out.println("Game started");
+        tempGame.startGame(players);
+        for (String player:players) {
+            busyGame.put(player, tempGame);
+        }
     }
 }

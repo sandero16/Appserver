@@ -21,6 +21,17 @@ public class Game {
     private ArrayList<Boolean>update;
     private ArrayList<Boolean> viewerupdate;
 
+    private int aantalSpeler;
+
+    public Game(){
+
+    }
+    public Game(int aantalSpelers, String host){
+        this.aantalSpeler=aantalSpelers;
+        players=new ArrayList<>();
+        players.add(host);
+    }
+
     public  Game(String player1, String player2){
         players=new ArrayList<>();
         scores=new ArrayList<>();
@@ -78,7 +89,33 @@ public class Game {
     public void setGameId(int id){
         gameId=id;
     }
-
+    public void addPlayer(String sessionToken){
+        players.add(sessionToken);
+    }
+    public boolean isFull(){
+        if(players.size()==aantalSpeler)return true;
+        return false;
+    }
+    public ArrayList<String> getPlayers(){
+        return players;
+    }
+    public void startGame(ArrayList<String> gamePlayers){
+        players=new ArrayList<>();
+        for (String player: gamePlayers) {
+            players.add(player);
+        }
+        scores=new ArrayList<>();
+        keuzes=new ArrayList<>();
+        plaatsen=new ArrayList<>();
+        update=new ArrayList<>();
+        viewerupdate=new ArrayList<>();
+        end=false;
+        reedsGezet=new ArrayList<>();
+        for(int i=0;i<gamePlayers.size();i++) {
+            update.add(false);
+        }
+        initialized=false;
+    }
     public void generateMatrix(){
 
         System.out.println("generating"+ " beurt: "+beurt);
